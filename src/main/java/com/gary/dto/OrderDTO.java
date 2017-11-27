@@ -1,14 +1,10 @@
-package com.gary.dataobject;
+package com.gary.dto;
 
+import com.gary.dataobject.OrderDetail;
 import com.gary.enums.OrderStatusEnum;
 import com.gary.enums.PayStatusEnum;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -16,20 +12,18 @@ import java.util.List;
 /**
  * Created by Guo on 2017/11/26.
  */
-@Entity
 @Data
-@DynamicUpdate
-public class OrderMaster {
-    @Id
+public class OrderDTO {
+
     private String orderId;
     private String buyerName;
     private String buyerPhone;
     private String buyerAddress;
     private String buyerOpenid;
     private BigDecimal orderAmount;
-    private Integer orderStatus = OrderStatusEnum.NEW.getCode();
-    private Integer payStatus = PayStatusEnum.WAIT.getCode();
+    private Integer orderStatus;
+    private Integer payStatus;
     private Date createTime;
     private Date updateTime;
-
+    private List<OrderDetail> orderDetailList;
 }
