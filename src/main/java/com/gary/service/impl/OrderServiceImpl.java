@@ -3,6 +3,7 @@ package com.gary.service.impl;
 import com.gary.dataobject.OrderDetail;
 import com.gary.dataobject.OrderMaster;
 import com.gary.dataobject.ProductInfo;
+import com.gary.dto.CartDTO;
 import com.gary.dto.OrderDTO;
 import com.gary.enums.ResultEnum;
 import com.gary.exception.SellException;
@@ -16,9 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Guo on 2017/11/26.
@@ -34,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderMasterRepository orderMasterRepository;
 
     @Override
+    @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
 
         String orderId= KeyUtil.genUniqueKey();
@@ -63,8 +70,12 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(orderDTO,orderMaster);
         orderMasterRepository.save(orderMaster);
         //扣库存
+        List<CartDTO> cartDTOList=orderDTO.getOrderDetailList().stream()
+                .map( e -> new CartDTO(e.getProductId(),e.getProductQuantity()))
+                .collect(Collectors.toList());
+        productService.decreaseStock(cartDTOList);
 
-        return null;
+        return orderDTO;
     }
 
     @Override
