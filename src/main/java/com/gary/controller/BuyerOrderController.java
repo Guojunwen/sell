@@ -5,6 +5,7 @@ import com.gary.dto.OrderDTO;
 import com.gary.enums.ResultEnum;
 import com.gary.exception.SellException;
 import com.gary.form.OrderForm;
+import com.gary.service.BuyerService;
 import com.gary.service.OrderService;
 import com.gary.utils.ResultVOUtil;
 import com.gary.vo.ResultVO;
@@ -15,10 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -35,6 +33,9 @@ public class BuyerOrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private BuyerService buyerService;
 
     //创建订单
     @RequestMapping("/create")
@@ -70,6 +71,19 @@ public class BuyerOrderController {
     }
 
     //订单详情
+    @GetMapping("/detail")
+    public ResultVO<OrderDTO> detail(@RequestParam("openid") String openid,
+                                     @RequestParam("orderId") String orderId){
+        OrderDTO orderDTO=buyerService.findOrderOne(openid, orderId);
+        return ResultVOUtil.success(orderDTO);
+    }
 
     //取消订单
+    @PostMapping("/cancel")
+    public ResultVO cancel(@RequestParam("openid") String openid,
+                           @RequestParam("orderId") String orderId){
+        buyerService.cancelOrder(openid, orderId);
+        return ResultVOUtil.success();
+    }
+
 }
